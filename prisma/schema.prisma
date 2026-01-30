@@ -1,0 +1,87 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id // Managed by Supabase Auth
+  email     String   @unique
+  name      String?
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  coupleId  String?  @map("couple_id")
+  couple    Couple?  @relation(fields: [coupleId], references: [id])
+
+  @@map("users")
+}
+
+model Couple {
+  id              String   @id @default(cuid())
+  anniversaryDate DateTime @map("anniversary_date") @db.Timestamptz
+  meetDate        DateTime? @map("meet_date") @db.Timestamptz
+  coverImage      String?  @map("cover_image")
+  themeColor      String?  @default("#e11d48") @map("theme_color")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  users           User[]
+  memories        Memory[]
+  tags            Tag[]
+
+  @@map("couples")
+}
+
+enum MilestoneType {
+  FIRST_MEET
+  FIRST_DATE
+  FIRST_TRAVEL
+  PROPOSAL
+  MARRIAGE
+  ANNIVERSARY
+  OTHER
+}
+
+model Memory {
+  id           String   @id @default(cuid())
+  title        String
+  content      String?  @db.Text
+  eventDate    DateTime @map("event_date") @db.Timestamptz
+  locationName String?  @map("location_name")
+  isFavorite   Boolean  @default(false) @map("is_favorite")
+  imageUrls    String[] @map("image_urls")
+  
+  milestone    MilestoneType?
+  
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  coupleId     String   @map("couple_id")
+  couple       Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  
+  tags         Tag[]
+
+  @@map("memories")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  coupleId  String   @map("couple_id")
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  
+  memories  Memory[]
+
+  @@unique([coupleId, name])
+  @@map("tags")
+}
