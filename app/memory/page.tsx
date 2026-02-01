@@ -1,5 +1,6 @@
 
 import { MasonryGallery } from '@/components/gallery/MasonryGallery'
+import { CreateMemoryDialog } from '@/components/gallery/CreateMemoryDialog'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getMemories } from '@/actions/memory'
@@ -23,6 +24,7 @@ export default async function MemoryPage() {
           Our Memories
         </h1>
         <MasonryGallery memories={memories || []} />
+        <CreateMemoryDialog />
       </div>
     </div>
   )

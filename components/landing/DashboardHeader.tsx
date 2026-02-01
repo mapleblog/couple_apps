@@ -184,32 +184,13 @@ function AvatarItem({
       transition={{ delay: 0.2 + index * 0.1 }}
       className="relative z-10 flex flex-col items-center group"
     >
-      {/* Animated Glowing Ring - Only for actual users (not placeholder) */}
-      {!isPlaceholder && (
-        <>
-          {/* Outer rotating gradient ring */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-44 sm:h-44 md:w-60 md:h-60 rounded-full bg-gradient-to-tr from-rose-500/0 via-rose-500/30 to-rose-500/0 -z-10 blur-md"
-          />
-          
-          {/* Inner pulsing ring */}
-          <motion.div
-            animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-44 sm:h-44 md:w-60 md:h-60 rounded-full border border-rose-500/20 -z-10"
-          />
-        </>
-      )}
-
       <div 
         onClick={onClick}
         className={cn(
-          "relative h-28 w-28 sm:h-40 sm:w-40 md:h-56 md:w-56 rounded-full border-4 border-stone-950 overflow-hidden shadow-2xl transition-transform duration-300",
+          "relative h-28 w-28 sm:h-40 sm:w-40 md:h-56 md:w-56 rounded-full border-4 border-stone-950 overflow-hidden shadow-2xl ring-2 md:ring-4 transition-transform duration-300",
           isPlaceholder 
             ? "bg-stone-900 border-dashed border-stone-700 ring-stone-800" 
-            : "bg-stone-800 ring-2 ring-stone-800/50",
+            : "bg-stone-800 ring-stone-700",
           isEditable && !isUploading ? "cursor-pointer hover:scale-105 hover:ring-rose-500/50" : ""
         )}
       >

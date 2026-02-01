@@ -26,7 +26,7 @@ export function MemoryCard({ id, title, eventDate, imageUrls, locationName, onCl
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className="group cursor-pointer break-inside-avoid mb-6"
+      className="group cursor-pointer"
     >
       <Card className="relative overflow-hidden border-stone-800 bg-stone-900 rounded-2xl aspect-[4/5] hover:border-stone-700 transition-colors">
         <div className="absolute inset-0 z-0">

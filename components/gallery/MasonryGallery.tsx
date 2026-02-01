@@ -51,7 +51,7 @@ export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
 
   return (
     <>
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 px-4 pb-20 max-w-7xl mx-auto space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 pb-20 max-w-7xl mx-auto">
         {displayMemories.map((memory, index) => (
           <MemoryCard
             key={memory.id}

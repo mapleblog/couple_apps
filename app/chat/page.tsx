@@ -15,7 +15,23 @@ export default async function ChatPage() {
   // Check if user has a couple
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },
-    select: { coupleId: true }
+    select: { 
+      coupleId: true,
+      couple: {
+        select: {
+          users: {
+            where: {
+              id: { not: user.id }
+            },
+            select: {
+              id: true,
+              name: true,
+              avatarUrl: true
+            }
+          }
+        }
+      }
+    }
   })
 
   if (!dbUser?.coupleId) {
@@ -30,17 +46,16 @@ export default async function ChatPage() {
   }
 
   const { success, data: messages } = await getMessages()
+  const partner = dbUser.couple?.users[0] || null
 
   return (
-    <div className="min-h-screen bg-stone-950 text-white flex flex-col">
-      <div className="flex-1 container mx-auto px-4 py-6 sm:py-10">
-        <h1 className="text-3xl font-serif font-bold text-center mb-8 bg-gradient-to-r from-rose-400 to-rose-600 bg-clip-text text-transparent">
-          Chat Channel
-        </h1>
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-950">
+      <div className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6">
         <ChatInterface 
           initialMessages={messages || []} 
           currentUserId={user.id}
           coupleId={dbUser.coupleId}
+          partner={partner}
         />
       </div>
     </div>
