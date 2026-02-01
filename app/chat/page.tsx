@@ -21,7 +21,6 @@ export default async function ChatPage() {
   if (!dbUser?.coupleId) {
     return (
       <div className="min-h-screen bg-stone-950 text-white flex flex-col">
-        <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-stone-400">You need to be linked to a partner to start chatting.</p>
         </div>
