@@ -1,5 +1,6 @@
 'use client'
 
+import { ImageCropDialog } from '@/components/ImageCropDialog'
 import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -26,6 +27,8 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserId }: DashboardHeaderProps) {
   const [isUploading, setIsUploading] = useState(false)
+  const [cropDialogOpen, setCropDialogOpen] = useState(false)
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Ensure we have 2 slots to display (User 1, User 2/Placeholder)
@@ -45,10 +48,24 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
     const file = e.target.files?.[0]
     if (!file || !currentUserId) return
 
+    const reader = new FileReader()
+    reader.addEventListener('load', () => {
+      setSelectedImageSrc(reader.result as string)
+      setCropDialogOpen(true)
+    })
+    reader.readAsDataURL(file)
+    
+    // Reset input
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const uploadAvatar = async (file: File) => {
+    if (!currentUserId) return
+
     setIsUploading(true)
     try {
       const supabase = createClient()
-      const fileExt = file.name.split('.').pop()
+      const fileExt = file.name.split('.').pop() || 'jpg'
       const fileName = `${currentUserId}-${Date.now()}.${fileExt}`
       const filePath = `${currentUserId}/${fileName}`
 
@@ -84,9 +101,12 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
       alert('Failed to upload image. Please ensure the image is valid and try again.')
     } finally {
       setIsUploading(false)
-      // Reset input
-      if (fileInputRef.current) fileInputRef.current.value = ''
     }
+  }
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    const file = new File([croppedBlob], "avatar.jpg", { type: "image/jpeg" })
+    uploadAvatar(file)
   }
 
   return (
@@ -97,6 +117,14 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
         className="hidden" 
         accept="image/*"
         onChange={handleFileChange}
+      />
+      
+      <ImageCropDialog 
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        imageSrc={selectedImageSrc}
+        onCropComplete={handleCropComplete}
+        aspect={1}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 md:gap-8 items-center justify-items-center">
@@ -156,13 +184,32 @@ function AvatarItem({
       transition={{ delay: 0.2 + index * 0.1 }}
       className="relative z-10 flex flex-col items-center group"
     >
+      {/* Animated Glowing Ring - Only for actual users (not placeholder) */}
+      {!isPlaceholder && (
+        <>
+          {/* Outer rotating gradient ring */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-44 sm:h-44 md:w-60 md:h-60 rounded-full bg-gradient-to-tr from-rose-500/0 via-rose-500/30 to-rose-500/0 -z-10 blur-md"
+          />
+          
+          {/* Inner pulsing ring */}
+          <motion.div
+            animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-44 sm:h-44 md:w-60 md:h-60 rounded-full border border-rose-500/20 -z-10"
+          />
+        </>
+      )}
+
       <div 
         onClick={onClick}
         className={cn(
-          "relative h-28 w-28 sm:h-40 sm:w-40 md:h-56 md:w-56 rounded-full border-4 border-stone-950 overflow-hidden shadow-2xl ring-2 md:ring-4 transition-transform duration-300",
+          "relative h-28 w-28 sm:h-40 sm:w-40 md:h-56 md:w-56 rounded-full border-4 border-stone-950 overflow-hidden shadow-2xl transition-transform duration-300",
           isPlaceholder 
             ? "bg-stone-900 border-dashed border-stone-700 ring-stone-800" 
-            : "bg-stone-800 ring-stone-700",
+            : "bg-stone-800 ring-2 ring-stone-800/50",
           isEditable && !isUploading ? "cursor-pointer hover:scale-105 hover:ring-rose-500/50" : ""
         )}
       >
