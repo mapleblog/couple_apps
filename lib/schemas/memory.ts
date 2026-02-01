@@ -6,7 +6,7 @@ export const memorySchema = z.object({
   eventDate: z.date(),
   locationName: z.string().optional(),
   imageUrls: z.array(z.string().url()).min(1, 'At least one photo is required'),
-  isFavorite: z.boolean().default(false),
+  isFavorite: z.boolean(),
   milestone: z.enum([
     'FIRST_MEET',
     'FIRST_DATE',

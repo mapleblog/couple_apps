@@ -28,7 +28,7 @@ export function MemoryCard({ id, title, eventDate, imageUrls, locationName, onCl
       onClick={onClick}
       className="group cursor-pointer"
     >
-      <Card className="relative overflow-hidden border-stone-800 bg-stone-900 rounded-2xl aspect-[4/5] hover:border-stone-700 transition-colors">
+      <Card className="relative overflow-hidden border-stone-800 bg-stone-900 rounded-2xl aspect-square hover:border-stone-700 transition-colors">
         <div className="absolute inset-0 z-0">
           <Image
             src={imageUrls[0] || PLACEHOLDER_IMAGE}
