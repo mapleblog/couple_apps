@@ -147,6 +147,7 @@ function AvatarItem({
   onClick?: () => void
 }) {
   const isPlaceholder = user.isPlaceholder
+  const [imgError, setImgError] = useState(false)
   
   return (
     <motion.div
@@ -176,7 +177,7 @@ function AvatarItem({
         )}
 
         {!isPlaceholder ? (
-          user.avatarUrl ? (
+          user.avatarUrl && !imgError ? (
             <Image 
               src={user.avatarUrl} 
               alt={user.name || 'User'} 
@@ -184,6 +185,7 @@ function AvatarItem({
               className="object-cover"
               sizes="(max-width: 640px) 160px, (max-width: 768px) 160px, 224px"
               priority
+              onError={() => setImgError(true)}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-stone-800 text-4xl md:text-6xl font-bold text-stone-500">
