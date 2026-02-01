@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { NavbarVisibility } from "@/components/NavbarVisibility";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -19,7 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col`}>
-        <Navbar />
+        <NavbarVisibility>
+          <Suspense fallback={<div className="h-16 border-b bg-background/80" />}>
+            <Navbar />
+          </Suspense>
+        </NavbarVisibility>
         <main className="flex-1">
           {children}
         </main>

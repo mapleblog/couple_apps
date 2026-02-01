@@ -46,7 +46,7 @@ export function DaysTogetherTimer({ anniversaryDate, meetDate }: DaysTimerProps)
   if (!stats) return null
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-4 sm:p-12 min-h-[300px]">
+    <div className="relative flex flex-col items-center justify-center p-4">
       <div className="flex flex-col items-center gap-4 w-full">
         <motion.div 
           animate={{ scale: [1, 1.1, 1] }}

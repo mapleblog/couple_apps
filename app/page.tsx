@@ -56,15 +56,15 @@ export default async function Home() {
   })
 
   return (
-    <div className="flex flex-col min-h-screen bg-stone-950">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-950 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center min-h-[60vh] py-20 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center w-full h-full">
         {/* Background Effects */}
         <div className="absolute inset-0 z-0">
            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-rose-900/20 blur-[120px] rounded-full animate-pulse-slow" />
         </div>
 
-        <div className="relative z-10 w-full">
+        <div className="relative z-10 w-full flex items-center justify-center">
           <DashboardHeader 
             users={sortedUsers} 
             anniversaryDate={displayCouple.anniversaryDate}

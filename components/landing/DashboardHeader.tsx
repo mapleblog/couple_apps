@@ -90,7 +90,7 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 pt-2 pb-6 md:py-12">
+    <div className="w-full max-w-4xl mx-auto px-4">
       <input 
         type="file" 
         ref={fileInputRef} 
