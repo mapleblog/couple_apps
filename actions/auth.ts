@@ -83,3 +83,39 @@ export async function signOut() {
   await supabase.auth.signOut()
   redirect('/login')
 }
+
+const resetPasswordSchema = z.object({
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
+export async function updatePassword(prevState: AuthState, formData: FormData): Promise<AuthState> {
+  const validatedFields = resetPasswordSchema.safeParse({
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+  })
+
+  if (!validatedFields.success) {
+    return { error: 'Invalid fields' }
+  }
+
+  const { password } = validatedFields.data
+  const supabase = await createClient()
+
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: password
+    })
+
+    if (error) {
+      return { error: error.message }
+    }
+  } catch (error) {
+    return { error: 'Failed to connect to authentication service.' }
+  }
+
+  redirect('/')
+}

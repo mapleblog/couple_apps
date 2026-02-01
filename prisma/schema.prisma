@@ -18,6 +18,8 @@ model User {
 
   coupleId  String?  @map("couple_id")
   couple    Couple?  @relation(fields: [coupleId], references: [id])
+  
+  sentMessages Message[]
 
   @@map("users")
 }
@@ -33,6 +35,7 @@ model Couple {
 
   users           User[]
   memories        Memory[]
+  messages        Message[]
   tags            Tag[]
 
   @@map("couples")
@@ -84,4 +87,18 @@ model Tag {
 
   @@unique([coupleId, name])
   @@map("tags")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  
+  senderId  String   @map("sender_id")
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  
+  coupleId  String   @map("couple_id")
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }
