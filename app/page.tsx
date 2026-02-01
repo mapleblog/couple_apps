@@ -1,4 +1,3 @@
-import { MasonryGallery } from '@/components/gallery/MasonryGallery'
 import { DashboardHeader } from '@/components/landing/DashboardHeader'
 import { getCoupleData } from '@/actions/couple'
 import { createClient } from '@/lib/supabase/server'
@@ -72,13 +71,6 @@ export default async function Home() {
             meetDate={displayCouple.meetDate}
             currentUserId={user.id}
           />
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      <section className="relative z-10 -mt-10">
-        <div className="container mx-auto">
-          <MasonryGallery />
         </div>
       </section>
     </div>

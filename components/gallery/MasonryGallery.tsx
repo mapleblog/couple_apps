@@ -40,13 +40,19 @@ const MOCK_MEMORIES = [
   }
 ]
 
-export function MasonryGallery() {
-  const [selectedMemory, setSelectedMemory] = useState<typeof MOCK_MEMORIES[0] | null>(null)
+interface MasonryGalleryProps {
+  memories: any[]
+}
+
+export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
+  const [selectedMemory, setSelectedMemory] = useState<any | null>(null)
+
+  const displayMemories = memories.length > 0 ? memories : MOCK_MEMORIES
 
   return (
     <>
       <div className="columns-1 md:columns-2 lg:columns-3 gap-6 px-4 pb-20 max-w-7xl mx-auto space-y-6">
-        {MOCK_MEMORIES.map((memory, index) => (
+        {displayMemories.map((memory, index) => (
           <MemoryCard
             key={memory.id}
             index={index}

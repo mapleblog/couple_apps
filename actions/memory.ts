@@ -74,6 +74,7 @@ export async function addMemory(formData: MemoryFormData): Promise<ActionRespons
     })
 
     revalidatePath('/')
+    revalidatePath('/memory')
     return { success: true }
   } catch (error) {
     console.error('Error adding memory:', error)

@@ -1,8 +1,7 @@
 import Link from "next/link"
-import { Heart, MessageCircle } from "lucide-react"
+import { Heart } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
-import { LogoutButton } from "@/components/LogoutButton"
-import { Button } from "@/components/ui/button"
+import { NavbarMenu } from "./NavbarMenu"
 
 export async function Navbar() {
   const supabase = await createClient()
@@ -17,15 +16,7 @@ export async function Navbar() {
         </Link>
 
         {user && (
-          <div className="flex items-center gap-2">
-            <Link href="/chat">
-              <Button variant="ghost" size="sm" className="text-stone-400 hover:text-rose-500 hover:bg-rose-500/10">
-                <MessageCircle className="h-5 w-5 mr-2" />
-                Chat
-              </Button>
-            </Link>
-            <LogoutButton />
-          </div>
+          <NavbarMenu />
         )}
       </div>
     </nav>
