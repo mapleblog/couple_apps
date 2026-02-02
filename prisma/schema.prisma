@@ -16,6 +16,12 @@ model User {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
+  // Basic Info
+  birthday      DateTime? @map("birthday") @db.Date
+  zodiacSign    String?   @map("zodiac_sign")
+  favoriteColor String?   @map("favorite_color")
+  location      String?   @map("location")
+
   coupleId  String?  @map("couple_id")
   couple    Couple?  @relation(fields: [coupleId], references: [id])
   

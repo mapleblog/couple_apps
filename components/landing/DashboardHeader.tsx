@@ -1,14 +1,16 @@
 'use client'
 
 import { ImageCropDialog } from '@/components/ImageCropDialog'
+import { ProfileEditDialog } from '@/components/landing/ProfileEditDialog'
 import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Loader2, Camera } from 'lucide-react'
+import { Loader2, Camera, Cake, MapPin, Palette, Star } from 'lucide-react'
 import { DaysTogetherTimer } from './DaysTimer'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { updateUserAvatar } from '@/actions/user'
+import { format } from 'date-fns'
 
 interface SimpleUser {
   id: string
@@ -16,6 +18,10 @@ interface SimpleUser {
   avatarUrl: string | null
   email: string
   isPlaceholder?: boolean
+  birthday?: Date | null
+  zodiacSign?: string | null
+  favoriteColor?: string | null
+  location?: string | null
 }
 
 interface DashboardHeaderProps {
@@ -28,6 +34,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserId }: DashboardHeaderProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [cropDialogOpen, setCropDialogOpen] = useState(false)
+  const [profileEditDialogOpen, setProfileEditDialogOpen] = useState(false)
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -37,6 +44,8 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
     users[0],
     users[1] || { id: 'placeholder', isPlaceholder: true, name: 'Partner', email: '', avatarUrl: null }
   ]
+
+  const currentUserData = users.find(u => u.id === currentUserId)
 
   const handleAvatarClick = (userId: string) => {
     if (userId === currentUserId && !isUploading) {
@@ -127,7 +136,15 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
         aspect={1}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 md:gap-8 items-center justify-items-center">
+      {currentUserData && (
+        <ProfileEditDialog 
+          open={profileEditDialogOpen}
+          onOpenChange={setProfileEditDialogOpen}
+          user={currentUserData}
+        />
+      )}
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-3 md:gap-6 items-center justify-items-center">
         {/* Left Avatar (Mobile: Top Left) */}
         <div className="col-start-1 row-start-1 md:col-start-1 md:row-start-1 justify-self-center md:justify-self-center">
           <AvatarItem 
@@ -136,6 +153,7 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
             isEditable={displayUsers[0].id === currentUserId}
             isUploading={displayUsers[0].id === currentUserId && isUploading}
             onClick={() => handleAvatarClick(displayUsers[0].id)}
+            onEditProfile={() => setProfileEditDialogOpen(true)}
           />
         </div>
 
@@ -147,12 +165,13 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
             isEditable={displayUsers[1].id === currentUserId}
             isUploading={displayUsers[1].id === currentUserId && isUploading}
             onClick={() => handleAvatarClick(displayUsers[1].id)}
+            onEditProfile={() => setProfileEditDialogOpen(true)}
           />
         </div>
 
         {/* Timer (Mobile: Bottom Full Width, Desktop: Center) */}
         <div className="col-span-2 row-start-2 md:col-span-1 md:col-start-2 md:row-start-1 w-full flex justify-center pt-16 pb-4 md:py-0">
-          <div className="scale-100 md:scale-100 transform origin-top md:origin-center">
+          <div className="scale-[0.9] md:scale-100 transform origin-top md:origin-center">
             <DaysTogetherTimer anniversaryDate={anniversaryDate} meetDate={meetDate ?? undefined} />
           </div>
         </div>
@@ -166,13 +185,15 @@ function AvatarItem({
   index, 
   isEditable = false,
   isUploading = false,
-  onClick 
+  onClick,
+  onEditProfile
 }: { 
   user: SimpleUser, 
   index: number, 
   isEditable?: boolean,
   isUploading?: boolean,
   onClick?: () => void
+  onEditProfile?: () => void
 }) {
   const isPlaceholder = user.isPlaceholder
   const [imgError, setImgError] = useState(false)
@@ -187,7 +208,7 @@ function AvatarItem({
       <div 
         onClick={onClick}
         className={cn(
-          "relative h-28 w-28 sm:h-40 sm:w-40 md:h-56 md:w-56 rounded-full border-4 border-stone-950 overflow-hidden shadow-2xl ring-2 md:ring-4 transition-transform duration-300",
+          "relative h-24 w-24 sm:h-36 sm:w-36 md:h-48 md:w-48 rounded-full border-4 border-stone-950 overflow-hidden shadow-2xl ring-2 md:ring-4 transition-transform duration-300",
           isPlaceholder 
             ? "bg-stone-900 border-dashed border-stone-700 ring-stone-800" 
             : "bg-stone-800 ring-stone-700",
@@ -228,16 +249,65 @@ function AvatarItem({
       </div>
       
       {!isPlaceholder && (
-         <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-2 md:mt-6 bg-stone-900/80 backdrop-blur-sm px-3 py-1 md:px-6 md:py-2.5 rounded-full border border-stone-800 shadow-lg"
-         >
-            <span className="text-xs md:text-xl font-medium text-stone-300 whitespace-nowrap">
-              {user.name || user.email?.split('@')[0] || 'User'}
-            </span>
-         </motion.div>
+         <div className="flex flex-col items-center">
+           <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className={cn(
+                "mt-2 md:mt-6 bg-stone-900/80 backdrop-blur-sm px-2 py-0.5 md:px-6 md:py-2.5 rounded-full border border-stone-800 shadow-lg flex items-center gap-2 group/name",
+                isEditable ? "cursor-pointer hover:border-stone-700" : ""
+              )}
+              onClick={() => {
+                if (isEditable) onEditProfile?.()
+              }}
+           >
+              <span className="text-xs md:text-xl font-medium text-stone-300 whitespace-nowrap">
+                {user.name || user.email?.split('@')[0] || 'User'}
+              </span>
+           </motion.div>
+
+           {/* User Info Section */}
+           <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="mt-2 flex flex-col items-center gap-1.5"
+           >
+              <div className="flex items-center gap-3 text-[10px] md:text-xs text-stone-400 font-medium tracking-wide">
+                 {user.birthday && (
+                   <div className="flex items-center gap-1 bg-stone-900/50 px-2 py-0.5 rounded-full border border-stone-800/50" title="Birthday">
+                     <Cake className="w-3 h-3 text-rose-400" />
+                     <span>{format(new Date(user.birthday), 'MMM d')}</span>
+                   </div>
+                 )}
+                 {user.zodiacSign && (
+                   <div className="flex items-center gap-1 bg-stone-900/50 px-2 py-0.5 rounded-full border border-stone-800/50" title="Zodiac">
+                     <Star className="w-3 h-3 text-amber-400" />
+                     <span>{user.zodiacSign}</span>
+                   </div>
+                 )}
+              </div>
+              
+              <div className="flex items-center gap-3 text-[10px] md:text-xs text-stone-500">
+                {user.location && (
+                   <div className="flex items-center gap-1" title="Location">
+                     <MapPin className="w-3 h-3" />
+                     <span>{user.location}</span>
+                   </div>
+                 )}
+                 {user.favoriteColor && (
+                   <div className="flex items-center gap-1" title={`Favorite Color: ${user.favoriteColor}`}>
+                     <Palette className="w-3 h-3" />
+                     <div 
+                       className="w-2 h-2 rounded-full ring-1 ring-white/10" 
+                       style={{ backgroundColor: user.favoriteColor }} 
+                     />
+                   </div>
+                 )}
+              </div>
+           </motion.div>
+         </div>
       )}
     </motion.div>
   )

@@ -31,13 +31,18 @@ export default async function Home() {
         id: user.id,
         name: dbUser?.name || user.user_metadata.full_name || user.email?.split('@')[0] || 'You',
         avatarUrl: dbUser?.avatarUrl || user.user_metadata.avatar_url,
-        email: user.email || 'you@example.com'
+        email: user.email || 'you@example.com',
+        birthday: (dbUser as any)?.birthday,
+        zodiacSign: (dbUser as any)?.zodiacSign,
+        favoriteColor: (dbUser as any)?.favoriteColor,
+        location: (dbUser as any)?.location
       },
       {
         id: 'partner-placeholder',
         name: 'Your Partner',
         avatarUrl: null,
-        email: 'partner@example.com'
+        email: 'partner@example.com',
+        isPlaceholder: true
       }
     ]
   }
@@ -56,7 +61,7 @@ export default async function Home() {
   })
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-950 overflow-hidden">
+    <div className="flex flex-col h-[calc(100svh-4rem)] bg-stone-950 overflow-hidden">
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center w-full h-full">
         {/* Background Effects */}
