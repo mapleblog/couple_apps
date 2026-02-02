@@ -22,13 +22,6 @@ export async function sendMessage(content: string) {
     return { success: false, error: 'No couple found' }
   }
 
-  // Debug log to check if prisma.message is defined
-  // @ts-ignore
-  if (!prisma.message) {
-    console.error('CRITICAL ERROR: prisma.message is undefined. Prisma Client is not generated correctly.')
-    return { success: false, error: 'Server configuration error: Message model not found' }
-  }
-
   try {
     const message = await prisma.message.create({
       data: {

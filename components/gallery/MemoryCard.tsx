@@ -3,9 +3,10 @@
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
-import { MapPin } from 'lucide-react'
+import { MapPin, Heart, Pencil } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { PLACEHOLDER_IMAGE } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 interface MemoryCardProps {
   id: string
@@ -13,11 +14,13 @@ interface MemoryCardProps {
   eventDate: Date | string
   imageUrls: string[]
   locationName?: string | null
+  isFavorite?: boolean
   onClick: () => void
+  onEdit: () => void
   index: number
 }
 
-export function MemoryCard({ id, title, eventDate, imageUrls, locationName, onClick, index }: MemoryCardProps) {
+export function MemoryCard({ id, title, eventDate, imageUrls, locationName, isFavorite, onClick, onEdit, index }: MemoryCardProps) {
   return (
     <motion.div
       layoutId={`card-${id}`}
@@ -38,6 +41,27 @@ export function MemoryCard({ id, title, eventDate, imageUrls, locationName, onCl
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+        </div>
+
+        {/* Actions & Indicators */}
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+          {/* Edit Button */}
+          <div 
+            className="bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 hover:border-rose-500 transform hover:scale-110"
+            onClick={(e) => {
+              e.stopPropagation()
+              onEdit()
+            }}
+          >
+            <Pencil className="w-4 h-4 text-white" />
+          </div>
+
+          {/* Favorite Indicator */}
+          {isFavorite && (
+            <div className="bg-rose-500/20 backdrop-blur-sm p-2 rounded-full border border-rose-500/30">
+              <Heart className="w-4 h-4 text-rose-500 fill-current" />
+            </div>
+          )}
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-6 z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">

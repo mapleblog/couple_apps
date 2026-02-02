@@ -53,7 +53,11 @@ export default async function ChatPage() {
       <div className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-6">
         <ChatInterface 
           initialMessages={messages || []} 
-          currentUserId={user.id}
+          currentUser={{
+            id: user.id,
+            name: user.user_metadata.full_name || user.email?.split('@')[0] || 'Me',
+            avatarUrl: user.user_metadata.avatar_url || null
+          }}
           coupleId={dbUser.coupleId}
           partner={partner}
         />

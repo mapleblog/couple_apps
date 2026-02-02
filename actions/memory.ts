@@ -113,15 +113,102 @@ export async function deleteMemory(memoryId: string): Promise<ActionResponse> {
       where: { id: memoryId }
     })
     
-    // Note: File deletion from Supabase Storage should ideally happen here too
-    // But since we store URLs, we'd need to parse the path from the URL
-    // For now, we focus on DB cleanup as per immediate requirement, 
-    // but in a real app, we should list and delete files from bucket.
-
     revalidatePath('/')
+    revalidatePath('/memory')
     return { success: true }
   } catch (error) {
     console.error('Error deleting memory:', error)
     return { success: false, error: 'Failed to delete memory' }
+  }
+}
+
+export async function toggleMemoryFavorite(memoryId: string, isFavorite: boolean): Promise<ActionResponse> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    })
+
+    if (!dbUser?.coupleId) {
+      return { success: false, error: 'No couple found' }
+    }
+
+    await prisma.memory.update({
+      where: {
+        id: memoryId,
+        coupleId: dbUser.coupleId
+      },
+      data: {
+        isFavorite
+      }
+    })
+
+    revalidatePath('/')
+    revalidatePath('/memory')
+    return { success: true }
+  } catch (error) {
+    console.error('Error toggling favorite:', error)
+    return { success: false, error: 'Failed to toggle favorite' }
+  }
+}
+
+export async function updateMemory(memoryId: string, formData: MemoryFormData): Promise<ActionResponse> {
+  try {
+    // Validate input
+    const validatedFields = memorySchema.safeParse(formData)
+    
+    if (!validatedFields.success) {
+      return { success: false, error: 'Invalid fields' }
+    }
+
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    })
+
+    if (!dbUser?.coupleId) {
+      return { success: false, error: 'No couple found' }
+    }
+
+    // Verify ownership
+    const existingMemory = await prisma.memory.findUnique({
+      where: { id: memoryId }
+    })
+
+    if (!existingMemory || existingMemory.coupleId !== dbUser.coupleId) {
+      return { success: false, error: 'Memory not found or access denied' }
+    }
+
+    await prisma.memory.update({
+      where: { id: memoryId },
+      data: {
+        title: validatedFields.data.title,
+        content: validatedFields.data.content,
+        eventDate: validatedFields.data.eventDate,
+        locationName: validatedFields.data.locationName,
+        isFavorite: validatedFields.data.isFavorite,
+        imageUrls: validatedFields.data.imageUrls,
+        milestone: validatedFields.data.milestone,
+      }
+    })
+
+    revalidatePath('/')
+    revalidatePath('/memory')
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating memory:', error)
+    return { success: false, error: 'Failed to update memory' }
   }
 }
