@@ -47,7 +47,10 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
 
   const currentUserData = users.find(u => u.id === currentUserId)
 
-  const handleAvatarClick = (userId: string) => {
+  const handleAvatarClick = (e: React.MouseEvent, userId: string) => {
+    // Prevent the click from triggering the heart effect
+    e.stopPropagation()
+    
     if (userId === currentUserId && !isUploading) {
       fileInputRef.current?.click()
     }
@@ -152,7 +155,7 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
             index={0} 
             isEditable={displayUsers[0].id === currentUserId}
             isUploading={displayUsers[0].id === currentUserId && isUploading}
-            onClick={() => handleAvatarClick(displayUsers[0].id)}
+            onClick={(e) => handleAvatarClick(e, displayUsers[0].id)}
             onEditProfile={() => setProfileEditDialogOpen(true)}
           />
         </div>
@@ -164,7 +167,7 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
             index={1} 
             isEditable={displayUsers[1].id === currentUserId}
             isUploading={displayUsers[1].id === currentUserId && isUploading}
-            onClick={() => handleAvatarClick(displayUsers[1].id)}
+            onClick={(e) => handleAvatarClick(e, displayUsers[1].id)}
             onEditProfile={() => setProfileEditDialogOpen(true)}
           />
         </div>
@@ -192,7 +195,7 @@ function AvatarItem({
   index: number, 
   isEditable?: boolean,
   isUploading?: boolean,
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent) => void
   onEditProfile?: () => void
 }) {
   const isPlaceholder = user.isPlaceholder
