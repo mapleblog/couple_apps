@@ -17,10 +17,11 @@ interface MemoryCardProps {
   isFavorite?: boolean
   onClick: () => void
   onEdit: () => void
+  onToggleFavorite?: () => void
   index: number
 }
 
-export function MemoryCard({ id, title, eventDate, imageUrls, locationName, isFavorite, onClick, onEdit, index }: MemoryCardProps) {
+export function MemoryCard({ id, title, eventDate, imageUrls, locationName, isFavorite, onClick, onEdit, onToggleFavorite, index }: MemoryCardProps) {
   return (
     <motion.div
       layoutId={`card-${id}`}
@@ -56,12 +57,26 @@ export function MemoryCard({ id, title, eventDate, imageUrls, locationName, isFa
             <Pencil className="w-4 h-4 text-white" />
           </div>
 
-          {/* Favorite Indicator */}
-          {isFavorite && (
-            <div className="bg-rose-500/20 backdrop-blur-sm p-2 rounded-full border border-rose-500/30">
-              <Heart className="w-4 h-4 text-rose-500 fill-current" />
-            </div>
-          )}
+          {/* Favorite Button */}
+          <div
+            className={cn(
+              "p-2 rounded-full backdrop-blur-md border transition-all duration-300 transform hover:scale-110 cursor-pointer",
+              isFavorite 
+                ? "bg-rose-500/20 border-rose-500/30 opacity-100 hover:bg-rose-500/30" 
+                : "bg-black/40 border-white/10 opacity-0 group-hover:opacity-100 hover:bg-rose-500 hover:border-rose-500"
+            )}
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleFavorite?.()
+            }}
+          >
+            <Heart 
+              className={cn(
+                "w-4 h-4 transition-colors",
+                isFavorite ? "text-rose-500 fill-rose-500" : "text-white"
+              )} 
+            />
+          </div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-6 z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">

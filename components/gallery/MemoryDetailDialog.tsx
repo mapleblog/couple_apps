@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Image from "next/image"
 import { format } from "date-fns"
-import { MapPin, Heart, Calendar, X, Pencil } from "lucide-react"
+import { MapPin, Heart, Calendar, X, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
 import { motion } from "framer-motion"
@@ -24,10 +25,12 @@ interface MemoryDetailDialogProps {
   } | null
   onToggleFavorite?: (id: string, isFavorite: boolean) => void
   onEdit?: (id: string) => void
+  onDelete?: (id: string) => void
 }
 
-export function MemoryDetailDialog({ isOpen, onClose, memory, onToggleFavorite, onEdit }: MemoryDetailDialogProps) {
+export function MemoryDetailDialog({ isOpen, onClose, memory, onToggleFavorite, onEdit, onDelete }: MemoryDetailDialogProps) {
   const [showRelive, setShowRelive] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
   if (!memory) return null
 
@@ -98,11 +101,51 @@ export function MemoryDetailDialog({ isOpen, onClose, memory, onToggleFavorite, 
                    <Button 
                      variant="outline" 
                      size="icon" 
-                     className="h-12 w-12 rounded-full border-stone-800 hover:bg-stone-900 text-stone-400 hover:text-white transition-colors"
+                     className="w-12 h-12 rounded-full border-stone-800 bg-stone-900/50 hover:bg-stone-800 text-stone-300 hover:text-white transition-all transform hover:scale-110"
                      onClick={() => onEdit(memory.id)}
                    >
                      <Pencil className="w-5 h-5" />
                    </Button>
+                 )}
+
+                 {onDelete && (
+                   <Popover open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+                     <PopoverTrigger asChild>
+                       <Button 
+                         variant="outline" 
+                         size="icon" 
+                         className="w-12 h-12 rounded-full border-stone-800 bg-stone-900/50 hover:bg-red-900/30 text-stone-300 hover:text-red-400 hover:border-red-900/50 transition-all transform hover:scale-110"
+                       >
+                         <Trash2 className="w-5 h-5" />
+                       </Button>
+                     </PopoverTrigger>
+                     <PopoverContent side="top" className="w-auto p-3 bg-stone-900 border-stone-800 shadow-xl mb-2">
+                       <div className="flex flex-col gap-3">
+                         <p className="text-sm font-medium text-stone-300 text-center">Delete this memory?</p>
+                         <div className="flex items-center gap-2">
+                           <Button 
+                             variant="ghost" 
+                             size="sm"
+                             className="h-8 text-stone-400 hover:text-white hover:bg-stone-800"
+                             onClick={() => setIsDeleteOpen(false)}
+                           >
+                             Cancel
+                           </Button>
+                           <Button 
+                             variant="destructive" 
+                             size="sm"
+                             className="h-8 bg-red-600 hover:bg-red-700 text-white"
+                             onClick={() => {
+                               onDelete(memory.id)
+                               setIsDeleteOpen(false)
+                             }}
+                           >
+                             Confirm
+                           </Button>
+                         </div>
+                       </div>
+                     </PopoverContent>
+                   </Popover>
                  )}
 
                  <Button 

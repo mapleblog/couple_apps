@@ -1,4 +1,5 @@
 import { DashboardHeader } from '@/components/landing/DashboardHeader'
+import { ShaderBackground } from '@/components/ui/shader-background'
 import { getCoupleData } from '@/actions/couple'
 import { createClient } from '@/lib/supabase/server'
 import prisma from '@/lib/prisma'
@@ -65,11 +66,9 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center w-full h-full">
         {/* Background Effects */}
-        <div className="absolute inset-0 z-0">
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-rose-900/20 blur-[120px] rounded-full animate-pulse-slow" />
-        </div>
+      <ShaderBackground />
 
-        <div className="relative z-10 w-full flex items-center justify-center">
+      <div className="relative z-10 w-full flex items-center justify-center">
           <DashboardHeader 
             users={sortedUsers} 
             anniversaryDate={displayCouple.anniversaryDate}

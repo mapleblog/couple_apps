@@ -4,7 +4,7 @@ import { useState, useOptimistic, useTransition } from 'react'
 import { MemoryCard } from './MemoryCard'
 import { MemoryDetailDialog } from './MemoryDetailDialog'
 import { EditMemoryDialog } from './EditMemoryDialog'
-import { toggleMemoryFavorite } from '@/actions/memory'
+import { toggleMemoryFavorite, deleteMemory } from '@/actions/memory'
 
 // Temporary mock data for UI development
 const MOCK_MEMORIES = [
@@ -50,6 +50,10 @@ interface MasonryGalleryProps {
   memories: any[]
 }
 
+type OptimisticAction = 
+  | { type: 'TOGGLE_FAVORITE'; id: string; isFavorite: boolean }
+  | { type: 'DELETE'; id: string }
+
 export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
   const [selectedMemoryId, setSelectedMemoryId] = useState<string | null>(null)
   const [editingMemoryId, setEditingMemoryId] = useState<string | null>(null)
@@ -59,8 +63,16 @@ export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
 
   const [optimisticMemories, setOptimisticMemory] = useOptimistic(
     displayMemories,
-    (state, { id, isFavorite }: { id: string; isFavorite: boolean }) => 
-      state.map(m => m.id === id ? { ...m, isFavorite } : m)
+    (state, action: OptimisticAction) => {
+      switch (action.type) {
+        case 'TOGGLE_FAVORITE':
+          return state.map(m => m.id === action.id ? { ...m, isFavorite: action.isFavorite } : m)
+        case 'DELETE':
+          return state.filter(m => m.id !== action.id)
+        default:
+          return state
+      }
+    }
   )
 
   const selectedMemory = selectedMemoryId 
@@ -73,14 +85,25 @@ export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
 
   const handleToggleFavorite = async (id: string, isFavorite: boolean) => {
     startTransition(async () => {
-      setOptimisticMemory({ id, isFavorite })
+      setOptimisticMemory({ type: 'TOGGLE_FAVORITE', id, isFavorite })
       try {
         await toggleMemoryFavorite(id, isFavorite)
       } catch (error) {
         console.error('Failed to toggle favorite', error)
-        // Optimistic update will revert automatically if parent re-renders, 
-        // but for immediate error handling we might want to toast.
-        // For now, reliance on revalidation is enough for eventual consistency.
+      }
+    })
+  }
+
+  const handleDelete = async (id: string) => {
+    // Close detail view immediately
+    if (selectedMemoryId === id) setSelectedMemoryId(null)
+    
+    startTransition(async () => {
+      setOptimisticMemory({ type: 'DELETE', id })
+      try {
+        await deleteMemory(id)
+      } catch (error) {
+        console.error('Failed to delete memory', error)
       }
     })
   }
@@ -95,6 +118,7 @@ export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
             {...memory}
             onClick={() => setSelectedMemoryId(memory.id)}
             onEdit={() => setEditingMemoryId(memory.id)}
+            onToggleFavorite={() => handleToggleFavorite(memory.id, !memory.isFavorite)}
           />
         ))}
       </div>
@@ -108,6 +132,7 @@ export function MasonryGallery({ memories = [] }: MasonryGalleryProps) {
           setSelectedMemoryId(null) // Close detail view
           setEditingMemoryId(id)    // Open edit view
         }}
+        onDelete={handleDelete}
       />
 
       <EditMemoryDialog 
