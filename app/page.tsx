@@ -62,9 +62,9 @@ export default async function Home() {
   })
 
   return (
-    <div className="flex flex-col h-[calc(100svh-4rem)] bg-stone-950 overflow-hidden">
+    <div className="flex flex-col h-[calc(100svh-4rem)] bg-stone-950 overflow-hidden overscroll-none touch-none">
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-start md:justify-center w-full h-full pt-[10vh] md:pt-0">
+      <section className="relative flex flex-col items-center justify-center w-full h-full">
         {/* Background Effects */}
       <ShaderBackground />
 

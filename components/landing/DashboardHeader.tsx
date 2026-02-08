@@ -144,9 +144,9 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
         />
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-8 md:gap-6 items-center justify-items-center">
-        {/* Left Avatar (Mobile: Bottom Left) */}
-        <div className="col-start-1 row-start-2 md:col-start-1 md:row-start-1 justify-self-center md:justify-self-center">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-3 md:gap-6 items-center justify-items-center">
+        {/* Left Avatar (Mobile: Top Left) */}
+        <div className="col-start-1 row-start-1 md:col-start-1 md:row-start-1 justify-self-center md:justify-self-center">
           <AvatarItem 
             user={displayUsers[0]} 
             index={0} 
@@ -157,8 +157,8 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
           />
         </div>
 
-        {/* Right Avatar (Mobile: Bottom Right) */}
-        <div className="col-start-2 row-start-2 md:col-start-3 md:row-start-1 justify-self-center md:justify-self-center">
+        {/* Right Avatar (Mobile: Top Right) */}
+        <div className="col-start-2 row-start-1 md:col-start-3 md:row-start-1 justify-self-center md:justify-self-center">
           <AvatarItem 
             user={displayUsers[1]} 
             index={1} 
@@ -169,9 +169,9 @@ export function DashboardHeader({ users, anniversaryDate, meetDate, currentUserI
           />
         </div>
 
-        {/* Timer (Mobile: Top Full Width, Desktop: Center) */}
-        <div className="col-span-2 row-start-1 md:col-span-1 md:col-start-2 md:row-start-1 w-full flex justify-center md:py-0">
-          <div className="scale-[0.9] md:scale-100 transform origin-center">
+        {/* Timer (Mobile: Bottom Full Width, Desktop: Center) */}
+        <div className="col-span-2 row-start-2 md:col-span-1 md:col-start-2 md:row-start-1 w-full flex justify-center pt-6 pb-2 md:py-0">
+          <div className="scale-[0.85] md:scale-100 transform origin-top md:origin-center">
             <DaysTogetherTimer anniversaryDate={anniversaryDate} meetDate={meetDate ?? undefined} />
           </div>
         </div>

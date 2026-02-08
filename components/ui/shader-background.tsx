@@ -23,7 +23,7 @@ export function ShaderBackground() {
 
       {/* Animated Gradient Blobs */}
       <motion.div
-        className="absolute top-[-15%] left-[-25%] w-[120vw] h-[120vw] md:top-[-10%] md:left-[-10%] md:w-[60vw] md:h-[60vw] rounded-full bg-blue-600/40 mix-blend-screen blur-[80px] md:blur-[120px]"
+        className="absolute top-[-20%] left-[-20%] w-[120vw] h-[120vw] md:top-[-10%] md:left-[-10%] md:w-[60vw] md:h-[60vw] rounded-full bg-blue-600/40 mix-blend-screen blur-[80px] md:blur-[120px]"
         animate={{
           x: [0, 80, -40, 0],
           y: [0, 40, 80, 0],
@@ -38,7 +38,7 @@ export function ShaderBackground() {
       />
       
       <motion.div
-        className="absolute top-[-15%] right-[-25%] w-[120vw] h-[120vw] md:top-[10%] md:right-[-10%] md:w-[60vw] md:h-[60vw] rounded-full bg-pink-600/40 mix-blend-screen blur-[80px] md:blur-[120px]"
+        className="absolute top-[10%] right-[-20%] w-[110vw] h-[110vw] md:top-[10%] md:right-[-10%] md:w-[60vw] md:h-[60vw] rounded-full bg-pink-600/40 mix-blend-screen blur-[80px] md:blur-[120px]"
         animate={{
           x: [0, -60, 30, 0],
           y: [0, 90, -30, 0],
