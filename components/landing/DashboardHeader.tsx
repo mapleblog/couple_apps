@@ -218,6 +218,12 @@ function AvatarItem({
           isEditable && !isUploading ? "cursor-pointer hover:scale-105 hover:ring-rose-500/50" : ""
         )}
       >
+        <motion.div
+          aria-hidden="true"
+          className="absolute -inset-3 rounded-full bg-gradient-to-r from-pink-500/25 via-fuchsia-500/20 to-purple-500/25 blur-xl z-0"
+          animate={{ scale: [1, 1.06, 1], opacity: [0.6, 0.95, 0.6] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
         {isUploading ? (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <Loader2 className="h-8 w-8 text-white animate-spin" />

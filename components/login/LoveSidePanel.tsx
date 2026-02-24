@@ -4,6 +4,11 @@ import { motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 
 export function LoveSidePanel() {
+  const seededUnit = (i: number, salt: number) => {
+    const x = Math.sin(i * 997 + salt * 101) * 10000
+    return x - Math.floor(x)
+  }
+
   return (
     <div className="relative hidden h-full w-full flex-col items-center justify-center overflow-hidden bg-stone-900 lg:flex">
       {/* Background Gradient */}
@@ -12,33 +17,44 @@ export function LoveSidePanel() {
       {/* Animated Floating Hearts */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(12)].map((_, i) => (
+          (() => {
+            const scale = 0.5 + seededUnit(i, 1) * 0.5
+            const rotate = seededUnit(i, 2) * 45 - 22.5
+            const duration = 10 + seededUnit(i, 3) * 10
+            const delay = seededUnit(i, 4) * 10
+            const size = 24 + seededUnit(i, 5) * 48
+            const x = `${seededUnit(i, 6) * 100 - 50}%`
+
+            return (
           <motion.div
             key={i}
             initial={{ 
               opacity: 0, 
               y: '120%', 
-              x: Math.random() * 100 - 50 + '%',
-              scale: 0.5 + Math.random() * 0.5
+              x,
+              scale
             }}
             animate={{ 
               opacity: [0, 1, 0], 
               y: '-20%',
-              rotate: [0, Math.random() * 45 - 22.5]
+              rotate: [0, rotate]
             }}
             transition={{ 
-              duration: 10 + Math.random() * 10, 
+              duration, 
               repeat: Infinity,
               ease: "linear",
-              delay: Math.random() * 10
+              delay
             }}
             className="absolute bottom-0 left-1/2"
             style={{ left: `${(i * 8) + 10}%` }}
           >
             <Heart 
               className="text-rose-500/20 fill-rose-500/20" 
-              size={24 + Math.random() * 48} 
+              size={size} 
             />
           </motion.div>
+            )
+          })()
         ))}
       </div>
 
